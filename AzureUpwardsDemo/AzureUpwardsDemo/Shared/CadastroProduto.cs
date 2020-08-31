@@ -8,7 +8,7 @@ namespace AzureUpwardsDemo.Shared
     public class CadastroProduto
     {
         [Required]
-        [StringLength(13, MinimumLength = 12)]
+        [StringLength(5, MinimumLength = 5)]
         public string CodigoBarras { get; set; }
         [Required]
         [MaxLength(30)]

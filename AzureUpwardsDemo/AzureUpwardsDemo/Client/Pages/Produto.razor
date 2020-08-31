@@ -39,7 +39,7 @@
     {
         if (!string.IsNullOrWhiteSpace(CodigoBarras))
         {
-            DadosProduto = await Http.GetFromJsonAsync<CadastroProduto>($"/api/Produtos/{CodigoBarras}");
+            DadosProduto = await Http.GetFromJsonAsync<CadastroProduto>($"Produtos/{CodigoBarras}");
             if (DadosProduto == null)
             {
                 Nav.NavigateTo("/produtos");
@@ -55,11 +55,11 @@
     {
         if (!string.IsNullOrWhiteSpace(CodigoBarras))
         {
-            await Http.PutAsJsonAsync<CadastroProduto>($"/api/Produtos/{CodigoBarras}", DadosProduto);
+            await Http.PutAsJsonAsync<CadastroProduto>($"Produtos", DadosProduto);
         }
         else
         {
-            await Http.PostAsJsonAsync<CadastroProduto>("/api/Produtos", DadosProduto);
+            await Http.PostAsJsonAsync<CadastroProduto>("Produtos", DadosProduto);
         }
 
         Nav.NavigateTo("/produtos");
