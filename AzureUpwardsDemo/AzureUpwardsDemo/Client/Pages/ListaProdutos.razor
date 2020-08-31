@@ -1,0 +1,58 @@
+﻿@page "/produtos"
+@inject HttpClient Http 
+
+<h3>Lista de Produtos</h3>
+
+@if (Produtos == null) 
+{
+    <h5>Carregando...</h5>
+}
+else
+{
+    <p>
+        <NavLink class="btn btn-primary" href="/Produto">Adicionar produto</NavLink>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Codigo de Barras</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var produto in Produtos)
+            {
+                var link = $"/Produto/{produto.CodigoBarras}";
+
+                <tr>
+                    <td>@produto.CodigoBarras</td>
+                    <td>@produto.Nome</td>
+                    <td>@(produto.Preco.HasValue ? produto.Preco.Value.ToString("C") : "-")</td>
+                    <td>
+                        <NavLink class="btn btn-secondary" href="@link">Editar</NavLink>
+                        <button class="btn btn-danger" @onclick="@(async (e) => await RemoverProduto(e, produto.CodigoBarras))">Remover</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ListaProduto[] Produtos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Produtos = await Http.GetFromJsonAsync<ListaProduto[]>("/api/Produtos");
+    }
+
+    private async Task RemoverProduto(MouseEventArgs e, string codigoBarras)
+    {
+        Produtos = null;
+        await Http.DeleteAsync($"/api/Produtos/{codigoBarras}");
+        Produtos = await Http.GetFromJsonAsync<ListaProduto[]>("/api/Produtos");
+    }
+}

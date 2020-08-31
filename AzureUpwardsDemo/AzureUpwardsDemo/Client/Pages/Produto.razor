@@ -1,0 +1,67 @@
+﻿@page "/Produto"
+@page "/Produto/{CodigoBarras}" 
+@inject HttpClient Http 
+@inject NavigationManager Nav
+
+<h3>Produto</h3>
+
+<EditForm Model="@DadosProduto" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <p>
+        <label for="codigoBarras">Código de Barras</label><br />
+        <InputText id="codigoBarras" @bind-Value="DadosProduto.CodigoBarras" />
+    </p>
+
+    <p>
+        <label for="nome">Nome</label><br />
+        <InputText id="nome" @bind-Value="DadosProduto.Nome" />
+    </p>
+
+    <p>
+        <label for="preco">Preço</label><br />
+        <InputNumber id="preco" @bind-Value="DadosProduto.Preco" />
+    </p>
+
+    <NavLink class="btn-outline-primary"href="/Produtos">Voltar</NavLink>
+
+    <button type="submit" class="btn btn-primary">@(string.IsNullOrWhiteSpace(CodigoBarras) ? "Cadastrar" : "Alterar")</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string CodigoBarras { get; set; }
+
+    private CadastroProduto DadosProduto = new CadastroProduto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(CodigoBarras))
+        {
+            DadosProduto = await Http.GetFromJsonAsync<CadastroProduto>($"/api/Produtos/{CodigoBarras}");
+            if (DadosProduto == null)
+            {
+                Nav.NavigateTo("/produtos");
+            }
+        }
+        else
+        {
+            DadosProduto = new CadastroProduto();
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!string.IsNullOrWhiteSpace(CodigoBarras))
+        {
+            await Http.PutAsJsonAsync<CadastroProduto>($"/api/Produtos/{CodigoBarras}", DadosProduto);
+        }
+        else
+        {
+            await Http.PostAsJsonAsync<CadastroProduto>("/api/Produtos", DadosProduto);
+        }
+
+        Nav.NavigateTo("/produtos");
+    }
+}
